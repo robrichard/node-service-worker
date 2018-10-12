@@ -16,15 +16,16 @@ function handleError(res, e) {
 
 function handleWithServiceWorker(serviceWorkerHandler, {origin}) {
     return async function handler(req, res) {
+        const url = new URL(`${origin}${req.url}`);
+        const headers = new Headers(req.headers);
+        // overwrite Host header
+        headers.set('Host', url.host);
         const request = new Request(
-            new URL(`${origin}${req.url}`),
+            url,
             {
+                compress: false,
                 method: req.method,
-                headers: new Headers({
-                    ...req.headers,
-                    Host: origin,
-                }),
-                compress: false
+                headers,
             }
         );
 
